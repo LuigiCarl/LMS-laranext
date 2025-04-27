@@ -5,7 +5,7 @@
 2. Clone the repository:
 
    ```bash
-   git clone <your-repository-link>
+   git clone https://github.com/LuigiCarl/LMS-laranext.git
    ```
 
 3. Move into the project folder:
