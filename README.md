@@ -1,25 +1,34 @@
-📚 How to Setup the Project
-Follow these steps to run the project locally:
+# 🚀 Project Setup Instructions
 
-🛠️ Step 1: Clone the Repository
+1. Open your terminal.
 
-git clone <your-repository-link>
-✅ This will download the project to your local machine.
+2. Clone the repository:
 
-📂 Step 2: Navigate into the Project Directory
+   ```bash
+   git clone <your-repository-link>
+   ```
 
-cd LMS-laranext/nextjs-app
-✅ Make sure you are inside the folder where package.json is located.
+3. Move into the project folder:
 
-📦 Step 3: Install Project Dependencies
+   ```bash
+   cd LMS-laranext/nextjs-app
+   ```
 
-npm install
-✅ This installs all necessary packages and modules.
+4. Install all the project dependencies:
 
-🚀 Step 4: Run the Development Server
+   ```bash
+   npm install
+   ```
 
-npm run dev
-✅ After running this command, the app will start at:
+5. Start the development server:
 
-http://localhost:3000
-Open it in your browser to see the app running!
+   ```bash
+   npm run dev
+   ```
+
+6. Open your browser and visit:
+
+   ```
+   http://localhost:3000
+   ```
+
