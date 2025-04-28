@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
+import Background from "@/components/background"; // Only Background imported
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body
-        className={cn("min-h-screen font-sans antialiased", fontSans.variable)}
+        className={cn("min-h-screen px-4 xl:px-0 font-sans antialiased", fontSans.variable)}
       >
         <ThemeProvider
           attribute="class"
@@ -34,6 +35,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Background />
         </ThemeProvider>
       </body>
     </html>
