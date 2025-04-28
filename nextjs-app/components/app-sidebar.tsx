@@ -3,6 +3,7 @@
 import * as React from "react"
 import {
   AudioWaveform,
+  BookAIcon,
   BookOpen,
   Bot,
   Command,
@@ -35,27 +36,18 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "BookHub",
+      logo: BookOpen,
+      plan: "Library",
     },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
+    
   ],
   navMain: [
     {
       title: "Playground",
       url: "#",
       icon: TerminalSquare,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "History",

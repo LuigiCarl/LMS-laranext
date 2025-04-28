@@ -1,34 +1,20 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-} from "recharts"
-
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
-
-const chartData = [
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-]
-
-const chartConfig = {
-  visitors: { label: "Visitors" },
-  safari: { label: "Safari", color: "hsl(var(--chart-2))" },
-} satisfies ChartConfig
+import { useTheme } from "next-themes" // 🆕 import
+import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function Chart() {
+  const { theme } = useTheme(); // 🆕 get theme
+  
+  const chartData = [
+    {
+      browser: "safari",
+      visitors: 200,
+      fill: theme === "dark" ? "#ffffff" : "#000000", // 🎯 dynamic color
+    },
+  ];
+
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
@@ -41,14 +27,10 @@ export default function Chart() {
               data={chartData}
               startAngle={0}
               endAngle={250}
-              innerRadius="65%" // Mobile: slightly larger hole
-              outerRadius="80%" // Mobile: slightly smaller chart
+              innerRadius="65%"
+              outerRadius="80%"
             >
-              <PolarGrid
-                gridType="circle"
-                radialLines={false}
-                stroke="none"
-              />
+              <PolarGrid gridType="circle" radialLines={false} stroke="none" />
               <RadialBar dataKey="visitors" background cornerRadius={10} />
               <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
                 <Label
@@ -64,7 +46,7 @@ export default function Chart() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-2xl md:text-4xl font-bold" // ✨ Adjusted text size
+                          className="fill-foreground text-2xl md:text-4xl font-bold"
                         >
                           {chartData[0].visitors.toLocaleString()}
                         </tspan>
