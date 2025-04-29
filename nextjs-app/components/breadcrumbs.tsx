@@ -40,7 +40,9 @@ import {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        
       </div>
+      
     );
   }
   
