@@ -4,7 +4,7 @@ import { useTheme } from "next-themes" // 🆕 import
 import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function Chart() {
+export default function Chart3() {
   const { theme } = useTheme(); // 🆕 get theme
   
   const chartData = [
@@ -67,7 +67,7 @@ export default function Chart() {
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-center text-xs md:text-sm font-medium">
-        Available
+        Not Returned
       </CardFooter>
     </Card>
   )

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 // Third-party library imports
 import Balancer from "react-wrap-balancer";
-import { Camera } from "lucide-react";
+import { Camera, SettingsIcon } from "lucide-react";
 
 // Local component imports
 import { Section, Container } from "@/components/craft";
@@ -38,12 +38,12 @@ const Hero = () => {
         <div className="not-prose mt-6 flex gap-2 md:mt-12">
           <Button asChild>
             <Link href="/dashboard">
-              <Camera className="mr-2" />
+              <SettingsIcon className="mr-2" />
               Admin Test
             </Link>
           </Button>
           <Button variant={"ghost"} asChild>
-            <Link href="/posts">Dolor Sit Amet -{">"}</Link>
+            <Link href="/register">Client Test -{">"}</Link>
           </Button>
         </div>
       </Container>
