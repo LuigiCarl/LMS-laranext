@@ -1,5 +1,8 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import Chart from "@/components/chart"
+import Chart2 from "@/components/chart2"
+import Chart3 from "@/components/chart3"
+import { DataTableDemo } from "@/components/table"
 
 import {
   Breadcrumb,
@@ -43,6 +46,7 @@ export default function Page() {
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 
+
             {/* Chart card */}
             <div className="relative rounded-xl bg-muted/50 aspect-[4/3] md:aspect-[5/4]">
               <div className="absolute inset-0">
@@ -53,17 +57,24 @@ export default function Page() {
             {/* Barchart card */}
             <div className="relative rounded-xl bg-muted/50 aspect-[4/3] md:aspect-[5/4]">
               <div className="absolute inset-0">
-                
+                <Chart2 />
               </div>
             </div>
 
-            {/* Placeholder card */}
-            <div className="relative rounded-xl bg-muted/50 aspect-[4/3] md:aspect-[5/4]" />
+            {/* Chart3 card */}
+            <div className="relative rounded-xl bg-muted/50 aspect-[4/3] md:aspect-[5/4]">
+              <div className="absolute inset-0">
+                <Chart3 />
+              </div>
+            </div>
+
 
           </div>
 
           {/* Bottom block */}
-          <div className="min-h-[400px] md:min-h-[300px] flex-1 rounded-xl bg-muted/50" />
+          <div className="min-h-[400px] md:min-h-[300px] flex-1 rounded-xl bg-muted/50 p-4">
+            <DataTableDemo />
+          </div>
         </div>
 
 

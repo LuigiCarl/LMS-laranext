@@ -32,3 +32,6 @@
    http://localhost:3000
    ```
 
+https://blocks.serp.co/blocks/navbar <--- some components
+
+https://github.com/birobirobiro/awesome-shadcn-ui <--- source
