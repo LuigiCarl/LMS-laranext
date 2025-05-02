@@ -26,7 +26,7 @@ const Hero = () => {
         />
         <h1 className="!mb-0">
           <Balancer>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Welcome
           </Balancer>
         </h1>
         <h3 className="text-muted-foreground">
