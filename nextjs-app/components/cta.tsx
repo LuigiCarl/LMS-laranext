@@ -52,7 +52,7 @@ export function CTA() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-6 flex h-fit items-center justify-center gap-2"
+            className="mt-6 flex h-fit items-center justify-center gap-2 md:flex-row flex-col"
           >
             <FormField
               control={form.control}

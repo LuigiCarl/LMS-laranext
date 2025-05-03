@@ -1,14 +1,12 @@
 import Feature from "@/components/carousel";
 import { Main } from "@/components/craft";
-import { Breadcrumbs } from "@/components/breadcrumbs";
-
+import Navbar from "@/components/navbar";
 
 export default function Page() {
     return (
 
         <Main>
-            <Breadcrumbs />
-
+            <Navbar />
             <Feature />
         </Main>
 
