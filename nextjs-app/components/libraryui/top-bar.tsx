@@ -62,11 +62,11 @@ export function TopBar({ borrowedCount, onBorrowedClick, onSearch, onLoginClick,
         >
             <div className="flex items-center justify-between px-3 h-12">
                 <Link href="/" className="text-sm font-medium shrink-0">
-                    Book.Hub
+                    BOOK HUB
                 </Link>
 
                 {/* Desktop Category Navigation */}
-                <div className="hidden md:flex flex-1 items-center justify-center gap-6 px-4">
+                <div className="hidden lg:flex flex-1 items-center justify-center gap-6 px-4">
                     {categories.map((category) => (
                         <button
                             key={category}
@@ -126,7 +126,7 @@ export function TopBar({ borrowedCount, onBorrowedClick, onSearch, onLoginClick,
                     {!isSearchOpen && (
                         <>
                             {/* Mobile Category Menu Toggle */}
-                            <div className="md:hidden">
+                            <div className="lg:hidden">
                                 <button
                                     onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
                                     className="p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -170,7 +170,7 @@ export function TopBar({ borrowedCount, onBorrowedClick, onSearch, onLoginClick,
                         animate={{ opacity: 1, y: 0, height: "auto" }}
                         exit={{ opacity: 0, y: -10, height: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-12 left-0 right-0 md:hidden overflow-hidden bg-white dark:bg-zinc-900 px-4 py-2 border-t border-zinc-200 dark:border-zinc-800 z-30"
+                        className="absolute top-12 left-0 right-0 lg:hidden overflow-hidden bg-white dark:bg-zinc-900 px-4 py-2 border-t border-zinc-200 dark:border-zinc-800 z-30"
                     >
                         <div className="flex flex-col gap-2">
                             {categories.map((category) => (
