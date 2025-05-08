@@ -115,11 +115,6 @@
   }
 }
 
-@layer prose-m-none {
-  * {
-    @apply prose-headings:m-0;
-  }
-}
 
 @layer utilities {
 
