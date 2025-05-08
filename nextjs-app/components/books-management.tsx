@@ -7,6 +7,7 @@ import { BookIcon, EditIcon, MoreHorizontalIcon, PlusIcon, SearchIcon, Trash2Ico
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -394,9 +395,11 @@ export function BooksManagement() {
                     <TableCell>
                       <div className="h-16 w-12 overflow-hidden rounded-md border">
                         {book.coverImage ? (
-                          <img
+                          <Image
                             src={book.coverImage || "/placeholder.svg"}
                             alt={`Cover for ${book.title}`}
+                            width={300} // Adjust as needed
+                            height={400} // Adjust as needed
                             className="h-full w-full object-cover"
                           />
                         ) : (
@@ -487,9 +490,12 @@ export function BooksManagement() {
               <div key={book.id} className="rounded-lg border overflow-hidden">
                 <div className="aspect-[2/3] relative">
                   {book.coverImage ? (
-                    <img
+
+                    <Image
                       src={book.coverImage || "/placeholder.svg"}
                       alt={`Cover for ${book.title}`}
+                      width={300} // Adjust as needed
+                      height={400} // Adjust as needed
                       className="h-full w-full object-cover"
                     />
                   ) : (
