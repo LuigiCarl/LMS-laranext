@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import Image from "next/image"
 
 // Mock data for search suggestions
 const searchSuggestions = [
@@ -321,7 +322,9 @@ export function LibrarySearch() {
                       <div key={book.id} className="flex items-center gap-4 rounded-lg border p-3">
                         <div className="h-16 w-12 overflow-hidden rounded-md border flex-shrink-0">
                           {book.coverImage ? (
-                            <img
+                            <Image
+                            width={300}
+                            height={400}
                               src={book.coverImage || "/placeholder.svg"}
                               alt={`Cover for ${book.title}`}
                               className="h-full w-full object-cover"

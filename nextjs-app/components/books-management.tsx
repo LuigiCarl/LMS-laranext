@@ -719,7 +719,7 @@ export function BooksManagement() {
           <DialogHeader>
             <DialogTitle>Upload Book Cover</DialogTitle>
             <DialogDescription>
-              Upload a cover image for "{currentBook?.title}" or provide an image URL.
+              Upload a cover image for &quot;{currentBook?.title}&quot; or provide an image URL.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-6 py-4">
