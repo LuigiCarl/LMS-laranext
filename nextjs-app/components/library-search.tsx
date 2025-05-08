@@ -177,7 +177,7 @@ export function LibrarySearch() {
   }
 
   return (
-    <div className="px-2 pt-2">
+    <div className="px-2 pt-2 pl-0">
       <Dialog>
         <DialogTrigger asChild>
           <div className="relative">
