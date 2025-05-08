@@ -73,7 +73,7 @@ export function RecentBorrows({ type }: RecentBorrowsProps) {
     },
   ]
 
-  const data = type === "borrow" ? borrowData : returnData
+  const data: (typeof borrowData[number] | typeof returnData[number])[] = type === "borrow" ? borrowData : returnData
 
   return (
     <div className="space-y-4">
@@ -115,11 +115,13 @@ export function RecentBorrows({ type }: RecentBorrowsProps) {
                 <>
                   {" "}
                   · Due:{" "}
-                  {new Date(item.dueDate).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  {type === "borrow" && "dueDate" in item && (
+                    new Date(item.dueDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  )}
                 </>
               )}
             </p>
