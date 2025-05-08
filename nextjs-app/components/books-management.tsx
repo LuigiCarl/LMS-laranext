@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { BookIcon, EditIcon, MoreHorizontalIcon, PlusIcon, SearchIcon, Trash2Icon, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -758,7 +757,9 @@ export function BooksManagement() {
                 <Label className="text-right pt-2">Preview</Label>
                 <div className="col-span-3">
                   <div className="h-48 w-32 overflow-hidden rounded-md border mx-auto">
-                    <img
+                    <Image
+                      width={300} // Adjust as needed
+                      height={400} // Adjust as needed
                       src={coverPreview || "/placeholder.svg"}
                       alt="Cover preview"
                       className="h-full w-full object-cover"
