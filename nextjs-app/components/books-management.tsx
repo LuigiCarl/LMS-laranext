@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { BookIcon, EditIcon, MoreHorizontalIcon, PlusIcon, SearchIcon, Trash2Icon, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
