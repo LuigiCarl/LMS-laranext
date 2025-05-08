@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react"
 import type { Book } from "./data"
+import Image from "next/image"
 
 interface BookGridProps {
   books: Book[]
@@ -21,7 +22,9 @@ export function BookGrid({ books, onBookSelect }: BookGridProps) {
           transition={{ duration: 0.2 }}
         >
           <div className="aspect-[2/3] bg-white dark:bg-zinc-900 rounded-md overflow-hidden shadow-sm">
-            <img
+            <Image
+              width={300}
+              height={400}
               src={book.coverImage || "/placeholder.svg"}
               alt={book.title}
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"

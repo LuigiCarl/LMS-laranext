@@ -6,6 +6,7 @@ import { useState } from "react"
 import type { BorrowedBook } from "./data"
 import { useAuth } from "./auth-context"
 import { ConfirmationModal } from "./confirmation-modal"
+import Image from "next/image"
 
 interface BorrowingDrawerProps {
   borrowedBooks: BorrowedBook[]
@@ -101,7 +102,9 @@ export function BorrowingDrawer({ borrowedBooks, onClose, onReturnBook, onLoginC
                   const daysRemaining = calculateDaysRemaining(book.dueDate)
                   return (
                     <div key={book.id} className="flex gap-4 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
-                      <img
+                      <Image
+                      width={300}
+                      height={400}
                         src={book.coverImage || "/placeholder.svg"}
                         alt={book.title}
                         className="w-20 h-28 object-cover rounded-md"

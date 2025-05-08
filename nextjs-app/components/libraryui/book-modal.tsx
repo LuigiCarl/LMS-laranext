@@ -6,6 +6,7 @@ import { useState } from "react"
 import type { Book } from "./data"
 import { useAuth } from "./auth-context"
 import { ConfirmationModal } from "./confirmation-modal"
+import Image from "next/image"
 
 interface BookModalProps {
     book: Book
@@ -54,7 +55,9 @@ export function BookModal({ book, onClose, onBorrow, onLoginClick }: BookModalPr
             >
                 <div className="h-full md:flex">
                     <div className="relative md:w-2/5">
-                        <img
+                        <Image
+                            width={300}
+                            height={400}
                             src={book.coverImage || "/placeholder.svg"}
                             alt={book.title}
                             className="w-full h-[300px] md:h-full object-cover"
