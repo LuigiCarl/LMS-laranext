@@ -1,8 +1,8 @@
 import { Main } from "@/components/craft";
-import Hero from "@/components/hero";
-import Feature from "@/components/features";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footers";
+import Hero from "@/components/landingui/hero";
+import Feature from "@/components/landingui/features";
+import Navbar from "@/components/landingui/navbar";
+import Footer from "@/components/landingui/footers";
 import CTA from "@/components/cta";
 
 
