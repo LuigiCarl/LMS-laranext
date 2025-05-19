@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Section } from "@/components/craft";
 
-import { ModeToggle } from "./darklight";
+import { ModeToggle } from "../darklight";
 
 const navigation = [
   { name: "Heros", href: "/hero" },
