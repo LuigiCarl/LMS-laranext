@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import apiClient from "@/lib/axios"
+import { useAxiosPost } from "@/hooks/useAxiosPost"
 
 // Book interface
 interface Book {
@@ -67,6 +68,9 @@ export function BooksManagement() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Add book POST hook
+  const { post: postBook, loading: postingBook, error: postError } = useAxiosPost<Book, Partial<Book>>("/books")
+
   useEffect(() => {
     apiClient.get<Book[]>("/books")
       .then(res => {
@@ -86,33 +90,43 @@ export function BooksManagement() {
       book.isbn.includes(searchQuery),
   )
 
-  const handleAddBook = () => {
+  const handleAddBook = async () => {
+    // Map frontend camelCase fields to backend snake_case fields
     const bookToAdd = {
-      id: books.length + 1,
       title: newBook.title,
       author: newBook.author,
       isbn: newBook.isbn,
       category: newBook.category,
-      status: "Available",
-      publishedYear: Number.parseInt(newBook.publishedYear),
-      copies: Number.parseInt(newBook.copies),
-      availableCopies: Number.parseInt(newBook.copies),
-      coverImage: newBook.coverImage,
+      published_year: Number(newBook.publishedYear),
+      copies: Number(newBook.copies),
+      available_copies: Number(newBook.copies),
+      cover_image: newBook.coverImage,
       description: newBook.description,
+      // Do not send id, status, created_at, updated_at
     }
 
-    setBooks([...books, bookToAdd])
-    setNewBook({
-      title: "",
-      author: "",
-      isbn: "",
-      category: "",
-      publishedYear: "",
-      copies: "1",
-      description: "",
-      coverImage: "",
-    })
-    setIsAddBookOpen(false)
+    try {
+      await postBook(bookToAdd)
+      setIsAddBookOpen(false)
+      setNewBook({
+        title: "",
+        author: "",
+        isbn: "",
+        category: "",
+        publishedYear: "",
+        copies: "1",
+        description: "",
+        coverImage: "",
+      })
+      setLoading(true)
+      setError(null)
+      apiClient.get<Book[]>("/books")
+        .then(res => setBooks(res.data))
+        .catch(() => setError("Failed to load books"))
+        .finally(() => setLoading(false))
+    } catch {
+      // error handled by postError
+    }
   }
 
   const handleEditBook = () => {
@@ -335,7 +349,10 @@ export function BooksManagement() {
                   <Button variant="outline" onClick={() => setIsAddBookOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleAddBook}>Add Book</Button>
+                  <Button onClick={handleAddBook} disabled={postingBook}>
+                    {postingBook ? "Adding..." : "Add Book"}
+                  </Button>
+                  {postError && <span className="text-red-600 ml-2">{postError.message}</span>}
                 </DialogFooter>
               </DialogContent>
             </Dialog>
