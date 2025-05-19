@@ -1,7 +1,6 @@
 "use client"
 
-import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { BookIcon, EditIcon, MoreHorizontalIcon, PlusIcon, SearchIcon, Trash2Icon, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,84 +26,25 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import apiClient from "@/lib/axios"
 
-// Mock data for books with cover images
-const initialBooks = [
-  {
-    id: 1,
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    isbn: "9780061120084",
-    category: "Fiction",
-    status: "Available",
-    publishedYear: 1960,
-    copies: 3,
-    availableCopies: 2,
-    coverImage:
-      "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    description:
-      "The unforgettable novel of a childhood in a sleepy Southern town and the crisis of conscience that rocked it.",
-  },
-  {
-    id: 2,
-    title: "1984",
-    author: "George Orwell",
-    isbn: "9780451524935",
-    category: "Science Fiction",
-    status: "Borrowed",
-    publishedYear: 1949,
-    copies: 5,
-    availableCopies: 3,
-    coverImage:
-      "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    description:
-      "A dystopian novel set in Airstrip One, a province of the superstate Oceania in a world of perpetual war.",
-  },
-  {
-    id: 3,
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    isbn: "9780743273565",
-    category: "Fiction",
-    status: "Available",
-    publishedYear: 1925,
-    copies: 4,
-    availableCopies: 4,
-    coverImage:
-      "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    description:
-      "A novel about the mysterious millionaire Jay Gatsby and his obsession with the beautiful Daisy Buchanan.",
-  },
-  {
-    id: 4,
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    isbn: "9780141439518",
-    category: "Romance",
-    status: "Available",
-    publishedYear: 1813,
-    copies: 2,
-    availableCopies: 1,
-    coverImage: "",
-    description: "A romantic novel of manners that follows the character development of Elizabeth Bennet.",
-  },
-  {
-    id: 5,
-    title: "The Catcher in the Rye",
-    author: "J.D. Salinger",
-    isbn: "9780316769488",
-    category: "Fiction",
-    status: "Borrowed",
-    publishedYear: 1951,
-    copies: 3,
-    availableCopies: 0,
-    coverImage: "",
-    description: "A novel about a teenager named Holden Caulfield and his experiences in New York City.",
-  },
-]
+// Book interface
+interface Book {
+  id: number
+  title: string
+  author: string
+  isbn: string
+  category: string
+  status: string
+  publishedYear: number
+  copies: number
+  availableCopies: number
+  coverImage: string
+  description: string
+}
 
 export function BooksManagement() {
-  const [books, setBooks] = useState(initialBooks)
+  const [books, setBooks] = useState<Book[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [isAddBookOpen, setIsAddBookOpen] = useState(false)
   const [isEditBookOpen, setIsEditBookOpen] = useState(false)
@@ -124,6 +64,20 @@ export function BooksManagement() {
   const [coverPreview, setCoverPreview] = useState("")
   const [coverUrl, setCoverUrl] = useState("")
   const [viewMode, setViewMode] = useState<"table" | "grid">("table")
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    apiClient.get<Book[]>("/books")
+      .then(res => {
+        setBooks(res.data)
+        setLoading(false)
+      })
+      .catch(err => {
+        setError("Failed to load books")
+        setLoading(false)
+      })
+  }, [])
 
   const filteredBooks = books.filter(
     (book) =>
@@ -211,6 +165,23 @@ export function BooksManagement() {
   const handleCoverUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCoverUrl(e.target.value)
     setCoverPreview(e.target.value)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
+        <span className="text-muted-foreground">Loading books...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px]">
+        <span className="text-red-600 font-medium">{error}</span>
+      </div>
+    )
   }
 
   return (
