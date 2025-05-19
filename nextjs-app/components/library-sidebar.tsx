@@ -29,7 +29,7 @@ export function LibrarySidebar({ ...props }: React.ComponentProps<typeof Sidebar
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <LibrarySearch />
+        <LibrarySearch/>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
