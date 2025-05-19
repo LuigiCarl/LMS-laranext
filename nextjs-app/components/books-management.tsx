@@ -28,6 +28,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import apiClient from "@/lib/axios"
 import { useAxiosPost } from "@/hooks/useAxiosPost"
+import { useAxiosFetch } from "@/hooks/useAxiosFetch"
+import axios from "axios"
 
 // Book interface
 interface Book {
@@ -67,6 +69,13 @@ export function BooksManagement() {
   const [viewMode, setViewMode] = useState<"table" | "grid">("table")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<any>(null)
+  const [editSuccess, setEditSuccess] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
+  const [editLoading, setEditLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteSuccess, setDeleteSuccess] = useState(false)
 
   // Add book POST hook
   const { post: postBook, loading: postingBook, error: postError } = useAxiosPost<Book, Partial<Book>>("/books")
@@ -129,23 +138,79 @@ export function BooksManagement() {
     }
   }
 
-  const handleEditBook = () => {
-    if (!currentBook) return
-
-    const updatedBooks = books.map((book) => (book.id === currentBook.id ? currentBook : book))
-
-    setBooks(updatedBooks)
-    setIsEditBookOpen(false)
-    setCurrentBook(null)
+  // Show edit form when edit button is clicked
+  const handleEditClick = (book: Book) => {
+    setCurrentBook(book)
+    setEditForm({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn,
+      category: book.category,
+      published_year: book.publishedYear,
+      copies: book.copies,
+      available_copies: book.availableCopies || book.copies,
+      description: book.description,
+      cover_image: book.coverImage,
+    })
+    setIsEditBookOpen(true)
+    setEditSuccess(false)
+    setEditError(null)
   }
 
-  const handleDeleteBook = () => {
-    if (!currentBook) return
+  // Edit form submit handler using useAxiosPost for PUT
+  const handleEditFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editForm?.id) return
+    setEditLoading(true)
+    setEditError(null)
+    setEditSuccess(false)
+    try {
+      // useAxiosPost can be used for PUT if you pass method override
+      await apiClient.put(`/books/${editForm.id}`, editForm)
+      setEditSuccess(true)
+      setIsEditBookOpen(false)
+      setEditForm(null)
+      setCurrentBook(null)
+      // Refresh book list
+      setLoading(true)
+      setError(null)
+      apiClient.get<Book[]>("/books")
+        .then(res => setBooks(res.data))
+        .catch(() => setError("Failed to load books"))
+        .finally(() => setLoading(false))
+    } catch (err: any) {
+      setEditError(err?.message || "Failed to update book")
+    } finally {
+      setEditLoading(false)
+    }
+  }
 
-    const updatedBooks = books.filter((book) => book.id !== currentBook.id)
-    setBooks(updatedBooks)
-    setIsDeleteBookOpen(false)
-    setCurrentBook(null)
+  const handleDeleteBook = async () => {
+    if (!currentBook) return
+    // Confirmation dialog before delete
+    const confirmed = window.confirm(`Are you sure you want to delete "${currentBook.title}" by ${currentBook.author}?`)
+    if (!confirmed) return
+
+    setDeleteLoading(true)
+    setDeleteError(null)
+    setDeleteSuccess(false)
+    try {
+      await apiClient.delete(`/books/${currentBook.id}`)
+      setDeleteSuccess(true)
+      setIsDeleteBookOpen(false)
+      setCurrentBook(null)
+      setLoading(true)
+      setError(null)
+      apiClient.get<Book[]>("/books")
+        .then(res => setBooks(res.data))
+        .catch(() => setError("Failed to load books"))
+        .finally(() => setLoading(false))
+    } catch (err: any) {
+      setDeleteError(err?.message || "Failed to delete book")
+    } finally {
+      setDeleteLoading(false)
+    }
   }
 
   const handleUploadCover = () => {
@@ -436,10 +501,7 @@ export function BooksManagement() {
                             {book.coverImage ? "Update Cover" : "Add Cover"}
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => {
-                              setCurrentBook(book)
-                              setIsEditBookOpen(true)
-                            }}
+                            onClick={() => handleEditClick(book)}
                           >
                             <EditIcon className="mr-2 h-4 w-4" />
                             Edit
@@ -510,10 +572,7 @@ export function BooksManagement() {
                           {book.coverImage ? "Update Cover" : "Add Cover"}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => {
-                            setCurrentBook(book)
-                            setIsEditBookOpen(true)
-                          }}
+                          onClick={() => handleEditClick(book)}
                         >
                           <EditIcon className="mr-2 h-4 w-4" />
                           Edit
@@ -569,108 +628,111 @@ export function BooksManagement() {
             <DialogTitle>Edit Book</DialogTitle>
             <DialogDescription>Update the details of the selected book.</DialogDescription>
           </DialogHeader>
-          {currentBook && (
-            <div className="grid gap-4 py-4">
+          {editForm && (
+            <form onSubmit={handleEditFormSubmit} className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-title" className="text-right">
-                  Title
-                </Label>
+                <Label htmlFor="edit-title" className="text-right">Title</Label>
                 <Input
                   id="edit-title"
-                  value={currentBook.title}
-                  onChange={(e) => setCurrentBook({ ...currentBook, title: e.target.value })}
+                  value={editForm.title}
+                  onChange={e => setEditForm({ ...editForm, title: e.target.value })}
                   className="col-span-3"
+                  required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-author" className="text-right">
-                  Author
-                </Label>
+                <Label htmlFor="edit-author" className="text-right">Author</Label>
                 <Input
                   id="edit-author"
-                  value={currentBook.author}
-                  onChange={(e) => setCurrentBook({ ...currentBook, author: e.target.value })}
+                  value={editForm.author}
+                  onChange={e => setEditForm({ ...editForm, author: e.target.value })}
                   className="col-span-3"
+                  required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-isbn" className="text-right">
-                  ISBN
-                </Label>
+                <Label htmlFor="edit-isbn" className="text-right">ISBN</Label>
                 <Input
                   id="edit-isbn"
-                  value={currentBook.isbn}
-                  onChange={(e) => setCurrentBook({ ...currentBook, isbn: e.target.value })}
+                  value={editForm.isbn}
+                  onChange={e => setEditForm({ ...editForm, isbn: e.target.value })}
                   className="col-span-3"
+                  required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-category" className="text-right">
-                  Category
-                </Label>
-                <Select
-                  value={currentBook.category}
-                  onValueChange={(value) => setCurrentBook({ ...currentBook, category: value })}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Fiction">Fiction</SelectItem>
-                    <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
-                    <SelectItem value="Science Fiction">Science Fiction</SelectItem>
-                    <SelectItem value="Fantasy">Fantasy</SelectItem>
-                    <SelectItem value="Romance">Romance</SelectItem>
-                    <SelectItem value="Mystery">Mystery</SelectItem>
-                    <SelectItem value="Biography">Biography</SelectItem>
-                    <SelectItem value="History">History</SelectItem>
-                    <SelectItem value="Self-Help">Self-Help</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="edit-category" className="text-right">Category</Label>
+                <Input
+                  id="edit-category"
+                  value={editForm.category}
+                  onChange={e => setEditForm({ ...editForm, category: e.target.value })}
+                  className="col-span-3"
+                  required
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-year" className="text-right">
-                  Published Year
-                </Label>
+                <Label htmlFor="edit-year" className="text-right">Published Year</Label>
                 <Input
                   id="edit-year"
                   type="number"
-                  value={currentBook.publishedYear}
-                  onChange={(e) => setCurrentBook({ ...currentBook, publishedYear: Number.parseInt(e.target.value) })}
+                  value={editForm.published_year}
+                  onChange={e => setEditForm({ ...editForm, published_year: Number(e.target.value) })}
                   className="col-span-3"
+                  required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="edit-copies" className="text-right">
-                  Total Copies
-                </Label>
+                <Label htmlFor="edit-copies" className="text-right">Total Copies</Label>
                 <Input
                   id="edit-copies"
                   type="number"
-                  value={currentBook.copies}
-                  onChange={(e) => setCurrentBook({ ...currentBook, copies: Number.parseInt(e.target.value) })}
+                  value={editForm.copies}
+                  onChange={e => setEditForm({ ...editForm, copies: Number(e.target.value) })}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-available-copies" className="text-right">Available Copies</Label>
+                <Input
+                  id="edit-available-copies"
+                  type="number"
+                  value={editForm.available_copies}
+                  onChange={e => setEditForm({ ...editForm, available_copies: Number(e.target.value) })}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="edit-cover-image" className="text-right">Cover Image URL</Label>
+                <Input
+                  id="edit-cover-image"
+                  value={editForm.cover_image}
+                  onChange={e => setEditForm({ ...editForm, cover_image: e.target.value })}
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="edit-description" className="text-right pt-2">
-                  Description
-                </Label>
+                <Label htmlFor="edit-description" className="text-right pt-2">Description</Label>
                 <textarea
                   id="edit-description"
-                  value={currentBook.description || ""}
-                  onChange={(e) => setCurrentBook({ ...currentBook, description: e.target.value })}
+                  value={editForm.description}
+                  onChange={e => setEditForm({ ...editForm, description: e.target.value })}
                   className="col-span-3 min-h-[80px] rounded-md border border-input bg-background px-3 py-2"
                 />
               </div>
-            </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEditBookOpen(false)} type="button">
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={editLoading}>
+                  {editLoading ? "Saving..." : "Save Changes"}
+                </Button>
+              </DialogFooter>
+              {editError && <div className="text-red-600 mt-2">{editError}</div>}
+              {editSuccess && <div className="text-green-600 mt-2">Book updated successfully!</div>}
+            </form>
           )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditBookOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleEditBook}>Save Changes</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -694,9 +756,11 @@ export function BooksManagement() {
             <Button variant="outline" onClick={() => setIsDeleteBookOpen(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteBook}>
-              Delete Book
+            <Button variant="destructive" onClick={handleDeleteBook} disabled={deleteLoading}>
+              {deleteLoading ? "Deleting..." : "Delete Book"}
             </Button>
+            {deleteError && <span className="text-red-600 ml-2">{deleteError}</span>}
+            {deleteSuccess && <span className="text-green-600 ml-2">Book deleted!</span>}
           </DialogFooter>
         </DialogContent>
       </Dialog>
