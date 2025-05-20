@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -8,6 +8,7 @@ import {
   BookOpenIcon,
   CalendarIcon,
   CheckCircleIcon,
+  XCircleIcon,
   ClockIcon,
   SearchIcon,
   UserIcon,
@@ -29,116 +30,60 @@ import {
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-// Mock data for borrows
-const initialBorrows = [
-  {
-    id: 1,
-    bookId: 1,
-    bookTitle: "To Kill a Mockingbird",
-    userId: 1,
-    userName: "John Doe",
-    userAvatar: "/placeholder-user.jpg",
-    userInitials: "JD",
-    borrowDate: "2024-01-10",
-    dueDate: "2024-01-24",
-    returnDate: null,
-    status: "active",
-  },
-  {
-    id: 2,
-    bookId: 2,
-    bookTitle: "1984",
-    userId: 2,
-    userName: "Jane Smith",
-    userAvatar: "/placeholder-user.jpg",
-    userInitials: "JS",
-    borrowDate: "2024-01-05",
-    dueDate: "2024-01-19",
-    returnDate: null,
-    status: "overdue",
-  },
-  {
-    id: 3,
-    bookId: 3,
-    bookTitle: "The Great Gatsby",
-    userId: 3,
-    userName: "Robert Johnson",
-    userAvatar: "/placeholder-user.jpg",
-    userInitials: "RJ",
-    borrowDate: "2024-01-12",
-    dueDate: "2024-01-26",
-    returnDate: null,
-    status: "active",
-  },
-  {
-    id: 4,
-    bookId: 4,
-    bookTitle: "Pride and Prejudice",
-    userId: 4,
-    userName: "Emily Davis",
-    userAvatar: "/placeholder-user.jpg",
-    userInitials: "ED",
-    borrowDate: "2024-01-08",
-    dueDate: "2024-01-22",
-    returnDate: "2024-01-15",
-    status: "returned",
-  },
-  {
-    id: 5,
-    bookId: 5,
-    bookTitle: "The Catcher in the Rye",
-    userId: 5,
-    userName: "Sarah Wilson",
-    userAvatar: "/placeholder-user.jpg",
-    userInitials: "SW",
-    borrowDate: "2024-01-03",
-    dueDate: "2024-01-17",
-    returnDate: "2024-01-20",
-    status: "returned-late",
-  },
-]
-
-// Mock data for available books
-const availableBooks = [
-  { id: 1, title: "To Kill a Mockingbird", author: "Harper Lee", copies: 3, availableCopies: 2 },
-  { id: 3, title: "The Great Gatsby", author: "F. Scott Fitzgerald", copies: 4, availableCopies: 3 },
-  { id: 4, title: "Pride and Prejudice", author: "Jane Austen", copies: 2, availableCopies: 1 },
-  { id: 6, title: "Moby Dick", author: "Herman Melville", copies: 2, availableCopies: 2 },
-  { id: 7, title: "War and Peace", author: "Leo Tolstoy", copies: 1, availableCopies: 1 },
-]
-
-// Mock data for users
-const users = [
-  { id: 1, name: "John Doe", email: "john@example.com", avatar: "/placeholder-user.jpg", initials: "JD" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", avatar: "/placeholder-user.jpg", initials: "JS" },
-  { id: 3, name: "Robert Johnson", email: "robert@example.com", avatar: "/placeholder-user.jpg", initials: "RJ" },
-  { id: 4, name: "Emily Davis", email: "emily@example.com", avatar: "/placeholder-user.jpg", initials: "ED" },
-  { id: 5, name: "Sarah Wilson", email: "sarah@example.com", avatar: "/placeholder-user.jpg", initials: "SW" },
-]
+import apiClient from "@/lib/axios"
+import type { Borrow } from "@/types/borrow"
+import type { Book } from "@/types/book"
+import type { User } from "@/types/user"
 
 export function BorrowReturn() {
-  const [borrows, setBorrows] = useState(initialBorrows)
+  const [borrows, setBorrows] = useState<Borrow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [isBorrowDialogOpen, setIsBorrowDialogOpen] = useState(false)
   const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false)
-  const [selectedBorrow, setSelectedBorrow] = useState<any>(null)
+  const [selectedBorrow, setSelectedBorrow] = useState<Borrow | null>(null)
   const [newBorrow, setNewBorrow] = useState({
     bookId: "",
     userId: "",
     dueDate: "",
   })
+  const [books, setBooks] = useState<Book[]>([])
+  const [users, setUsers] = useState<User[]>([])
 
-  const activeBorrows = borrows.filter((borrow) => borrow.status === "active" || borrow.status === "overdue")
+  useEffect(() => {
+    setLoading(true)
+    setError(null)
+    Promise.all([
+      apiClient.get<Borrow[]>("/borrows"),
+      apiClient.get<Book[]>("/books"),
+      apiClient.get<User[]>("/users"),
+    ])
+      .then(([borrowsRes, booksRes, usersRes]) => {
+        setBorrows(Array.isArray(borrowsRes.data) ? borrowsRes.data : [])
+        setBooks(Array.isArray(booksRes.data) ? booksRes.data : [])
+        setUsers(Array.isArray(usersRes.data) ? usersRes.data : [])
+      })
+      .catch(() => setError("Failed to load borrow data"))
+      .finally(() => setLoading(false))
+  }, [])
 
-  const returnedBorrows = borrows.filter((borrow) => borrow.status === "returned" || borrow.status === "returned-late")
+  // Helper for available books (books with available_copies > 0)
+  const availableBooks = books.filter((b) => (b.availableCopies ?? 0) > 0)
 
+  // Filtering and mapping for display
+  const activeBorrows = borrows.filter(
+    (borrow) => borrow.status === "active"
+  )
+  const returnedBorrows = borrows.filter(
+    (borrow) => borrow.status === "returned"
+  )
   const filteredBorrows = searchQuery
     ? borrows.filter(
-        (borrow) =>
-          borrow.bookTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          borrow.userName.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+      (borrow) =>
+        (borrow.book?.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (borrow.borrower?.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : borrows
 
   const handleNewBorrow = () => {
@@ -150,18 +95,19 @@ export function BorrowReturn() {
 
     if (!selectedBook || !selectedUser) return
 
-    const newBorrowRecord = {
+    const now = new Date().toISOString();
+    const newBorrowRecord: Borrow = {
       id: borrows.length + 1,
-      bookId: selectedBook.id,
-      bookTitle: selectedBook.title,
-      userId: selectedUser.id,
-      userName: selectedUser.name,
-      userAvatar: selectedUser.avatar,
-      userInitials: selectedUser.initials,
-      borrowDate: new Date().toISOString().split("T")[0],
-      dueDate: dueDate.toISOString().split("T")[0],
-      returnDate: null,
+      book_id: selectedBook.id,
+      borrower_id: selectedUser.id,
+      borrow_date: new Date().toISOString().split("T")[0],
+      due_date: dueDate.toISOString().split("T")[0],
+      return_date: null,
       status: "active",
+      book: selectedBook,
+      borrower: selectedUser,
+      created_at: now,
+      updated_at: now,
     }
 
     setBorrows([...borrows, newBorrowRecord])
@@ -173,26 +119,51 @@ export function BorrowReturn() {
     setIsBorrowDialogOpen(false)
   }
 
-  const handleReturn = () => {
+  const handleReturn = async () => {
     if (!selectedBorrow) return
 
-    const today = new Date()
-    const dueDate = new Date(selectedBorrow.dueDate)
-    const isLate = today > dueDate
+    const now = new Date()
+    const todayStr = now.toISOString().slice(0, 19).replace("T", " ")
+    const dueDate = new Date(selectedBorrow.due_date)
+    // Backend only allows status: "returned"
+    try {
+      await apiClient.put(`/borrows/${selectedBorrow.id}`, {
+        status: "returned",
+        return_date: todayStr,
+      });
 
-    const updatedBorrows = borrows.map((borrow) =>
-      borrow.id === selectedBorrow.id
-        ? {
-            ...borrow,
-            returnDate: today.toISOString().split("T")[0],
-            status: isLate ? "returned-late" : "returned",
-          }
-        : borrow,
-    )
+      setLoading(true);
+      await apiClient.get<Borrow[]>("/borrows")
+        .then(res => setBorrows(Array.isArray(res.data) ? res.data : []))
+        .catch(() => setError("Failed to load borrow data"))
+        .finally(() => setLoading(false));
+    } catch (err: any) {
+      setError(
+        err?.response?.data?.message
+          ? `Failed to update borrow status: ${err.response.data.message}`
+          : "Failed to update borrow status"
+      );
+    }
 
-    setBorrows(updatedBorrows)
     setIsReturnDialogOpen(false)
     setSelectedBorrow(null)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
+        <span className="text-muted-foreground">Loading borrows...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px]">
+        <span className="text-red-600 font-medium">{error}</span>
+      </div>
+    )
   }
 
   return (
@@ -316,34 +287,50 @@ export function BorrowReturn() {
                 {activeBorrows.length > 0 ? (
                   activeBorrows.map((borrow) => (
                     <TableRow key={borrow.id}>
-                      <TableCell className="font-medium">{borrow.bookTitle}</TableCell>
+                      <TableCell className="font-medium">{borrow.book?.title || borrow.book_id}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
-                            <AvatarImage src={borrow.userAvatar || "/placeholder.svg"} alt={borrow.userName} />
-                            <AvatarFallback>{borrow.userInitials}</AvatarFallback>
+                            <AvatarImage
+                              src={borrow.borrower?.avatar || "/placeholder.svg"}
+                              alt={borrow.borrower?.name || ""}
+                            />
+                            <AvatarFallback>
+                              {borrow.borrower?.name
+                                ? borrow.borrower.name.split(" ").map((n) => n[0]).join("")
+                                : ""}
+                            </AvatarFallback>
                           </Avatar>
-                          <span>{borrow.userName}</span>
+                          <span>{borrow.borrower?.name || borrow.borrower_id}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{new Date(borrow.borrowDate).toLocaleDateString()}</TableCell>
-                      <TableCell>{new Date(borrow.dueDate).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(borrow.borrow_date).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(borrow.due_date).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        {borrow.status === "overdue" ? (
-                          <Badge
-                            variant="outline"
-                            className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                          >
-                            <ClockIcon className="mr-1 h-3 w-3" /> Overdue
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                          >
-                            <CheckCircleIcon className="mr-1 h-3 w-3" /> Active
-                          </Badge>
-                        )}
+                        <Badge
+                          variant="outline"
+                          className={
+                            borrow.status === "returned"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                              : new Date(borrow.due_date) < new Date() && borrow.status === "active"
+                                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                                : "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
+                          }
+                        >
+                          {borrow.status === "returned"
+                            ? "Returned"
+                            : new Date(borrow.due_date) < new Date()
+                              ? "Overdue"
+                              : "Active"}
+
+                          {borrow.status === "returned" || (borrow.status === "active" && new Date(borrow.due_date) >= new Date()) ? (
+                            <CheckCircleIcon className="ml-2 mr-1 h-3 w-3" />
+                          ) : (
+                            <XCircleIcon className="ml-2 mr-1 h-3 w-3" />
+                          )}
+                        </Badge>
+
+
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -387,40 +374,52 @@ export function BorrowReturn() {
               </TableHeader>
               <TableBody>
                 {returnedBorrows.length > 0 ? (
-                  returnedBorrows.map((borrow) => (
-                    <TableRow key={borrow.id}>
-                      <TableCell className="font-medium">{borrow.bookTitle}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={borrow.userAvatar || "/placeholder.svg"} alt={borrow.userName} />
-                            <AvatarFallback>{borrow.userInitials}</AvatarFallback>
-                          </Avatar>
-                          <span>{borrow.userName}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{new Date(borrow.borrowDate).toLocaleDateString()}</TableCell>
-                      <TableCell>{new Date(borrow.dueDate).toLocaleDateString()}</TableCell>
-                      <TableCell>{borrow.returnDate && new Date(borrow.returnDate).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        {borrow.status === "returned-late" ? (
-                          <Badge
-                            variant="outline"
-                            className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
-                          >
-                            <ClockIcon className="mr-1 h-3 w-3" /> Returned Late
-                          </Badge>
-                        ) : (
-                          <Badge
-                            variant="outline"
-                            className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                          >
-                            <CheckCircleIcon className="mr-1 h-3 w-3" /> Returned
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  returnedBorrows.map((borrow) => {
+                    const isLate =
+                      borrow.return_date &&
+                      new Date(borrow.return_date) > new Date(borrow.due_date)
+                    return (
+                      <TableRow key={borrow.id}>
+                        <TableCell className="font-medium">{borrow.book?.title || borrow.book_id}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage
+                                src={borrow.borrower?.avatar || "/placeholder.svg"}
+                                alt={borrow.borrower?.name || ""}
+                              />
+                              <AvatarFallback>
+                                {borrow.borrower?.name
+                                  ? borrow.borrower.name.split(" ").map((n) => n[0]).join("")
+                                  : ""}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span>{borrow.borrower?.name || borrow.borrower_id}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{new Date(borrow.borrow_date).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(borrow.due_date).toLocaleDateString()}</TableCell>
+                        <TableCell>{borrow.return_date && new Date(borrow.return_date).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          {isLate ? (
+                            <Badge
+                              variant="outline"
+                              className="bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300"
+                            >
+                              <XCircleIcon className="mr-1 h-3 w-3" /> Returned Late
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                            >
+                              <CheckCircleIcon className="mr-1 h-3 w-3" /> Returned
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
@@ -446,17 +445,17 @@ export function BorrowReturn() {
               <div className="mb-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <BookIcon className="h-5 w-5 text-muted-foreground" />
-                  <p className="font-semibold">{selectedBorrow.bookTitle}</p>
+                  <p className="font-semibold">{selectedBorrow.book?.title}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <UserIcon className="h-5 w-5 text-muted-foreground" />
-                  <p>Borrowed by: {selectedBorrow.userName}</p>
+                  <p>Borrowed by: {selectedBorrow.borrower?.name}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-5 w-5 text-muted-foreground" />
-                  <p>Due date: {new Date(selectedBorrow.dueDate).toLocaleDateString()}</p>
+                  <p>Due date: {new Date(selectedBorrow.due_date).toLocaleDateString()}</p>
                 </div>
-                {new Date() > new Date(selectedBorrow.dueDate) && (
+                {new Date() > new Date(selectedBorrow.due_date) && (
                   <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
                     <ClockIcon className="h-5 w-5" />
                     <p>This book is overdue!</p>
