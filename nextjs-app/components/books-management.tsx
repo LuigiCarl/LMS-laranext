@@ -28,8 +28,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import apiClient from "@/lib/axios"
 import { useAxiosPost } from "@/hooks/useAxiosPost"
-import { useAxiosFetch } from "@/hooks/useAxiosFetch"
-import axios from "axios"
 
 // Book interface
 interface Book {
