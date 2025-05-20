@@ -84,8 +84,8 @@ export function BooksManagement() {
         setBooks(res.data)
         setLoading(false)
       })
-      .catch(err => {
-        setError("Failed to load books")
+      .catch(() => {
+        setBooks([]) // Show empty table, not error
         setLoading(false)
       })
   }, [])
@@ -249,14 +249,6 @@ export function BooksManagement() {
       <div className="flex flex-col items-center justify-center min-h-[300px]">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
         <span className="text-muted-foreground">Loading books...</span>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[300px]">
-        <span className="text-red-600 font-medium">{error}</span>
       </div>
     )
   }

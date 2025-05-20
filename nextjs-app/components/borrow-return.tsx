@@ -292,7 +292,7 @@ export function BorrowReturn() {
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
                             <AvatarImage
-                              src={borrow.borrower?.avatar || "/placeholder.svg"}
+                              src={"/placeholder.svg"}
                               alt={borrow.borrower?.name || ""}
                             />
                             <AvatarFallback>
@@ -385,7 +385,7 @@ export function BorrowReturn() {
                           <div className="flex items-center gap-2">
                             <Avatar className="h-6 w-6">
                               <AvatarImage
-                                src={borrow.borrower?.avatar || "/placeholder.svg"}
+                                src={"/placeholder.svg"}
                                 alt={borrow.borrower?.name || ""}
                               />
                               <AvatarFallback>
