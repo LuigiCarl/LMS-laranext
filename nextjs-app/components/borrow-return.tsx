@@ -64,7 +64,12 @@ export function BorrowReturn() {
         setBooks(Array.isArray(booksRes.data) ? booksRes.data : [])
         setUsers(Array.isArray(usersRes.data) ? usersRes.data : [])
       })
-      .catch(() => setError("Failed to load borrow data"))
+      .catch(() => {
+        setBorrows([]) // Show empty table if error
+        setBooks([])
+        setUsers([])
+        // Do not set error, so table renders with "No borrows found"
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -154,14 +159,6 @@ export function BorrowReturn() {
       <div className="flex flex-col items-center justify-center min-h-[300px]">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-4"></div>
         <span className="text-muted-foreground">Loading borrows...</span>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[300px]">
-        <span className="text-red-600 font-medium">{error}</span>
       </div>
     )
   }
@@ -350,7 +347,7 @@ export function BorrowReturn() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                      No active borrows found.
+                      No borrows found.
                     </TableCell>
                   </TableRow>
                 )}
@@ -423,7 +420,7 @@ export function BorrowReturn() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
-                      No return history found.
+                      No borrows found.
                     </TableCell>
                   </TableRow>
                 )}
