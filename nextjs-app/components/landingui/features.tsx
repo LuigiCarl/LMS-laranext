@@ -37,19 +37,19 @@ const featureText: FeatureText[] = [
   },
   {
     icon: <Coins className="h-6 w-6" />,
-    title: "Lorem Ipsum",
+    title: "Personalized Experience",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    cta: "Learn More",
+     "Book Hub helped me rediscover my love for reading. The personalized book recommendations are spot-on, and I love the community feel of the disscussion forums.!"
+  
   },
   {
     icon: <Coins className="h-6 w-6" />,
-    title: "Lorem Ipsum",
+    title: "Read Anywhere, Anytime",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    cta: "Learn More",
+      "Access your books on amy device, sync across platforms, and never lose your place your library goes where you go.",
+  
   },
 ];
 

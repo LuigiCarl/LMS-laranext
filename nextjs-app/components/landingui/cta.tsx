@@ -45,8 +45,8 @@ export function CTA() {
         <h2 className="!my-0">Subscribe</h2>
         <p className="text-lg opacity-70 md:text-2xl">
           <Balancer>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Stay updated with the latest Book releases, personalized recommendations, exclusive discounts, and community events. Join thounsands of readers who never 
+            miss a story.
           </Balancer>
         </p>
         <Form {...form}>
