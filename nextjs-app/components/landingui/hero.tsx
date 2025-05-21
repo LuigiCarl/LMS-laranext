@@ -31,8 +31,7 @@ const Hero = () => {
         </h1>
         <h3 className="text-muted-foreground">
           <Balancer>
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat.
+            Christian Macaranas
           </Balancer>
         </h3>
         <div className="not-prose mt-6 flex gap-2 md:mt-12">

@@ -45,8 +45,7 @@ export function CTA() {
         <h2 className="!my-0">Subscribe</h2>
         <p className="text-lg opacity-70 md:text-2xl">
           <Balancer>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            BSIT 2-4
           </Balancer>
         </p>
         <Form {...form}>
