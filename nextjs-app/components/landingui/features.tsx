@@ -24,7 +24,7 @@ const featureText: FeatureText[] = [
     title: "Game of thrones",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "Game of Thrones is a fantasy drama television series based on George R.R. Martin's book series A Song of Ice and Fire",
     cta: "Learn More",
   },
   {
