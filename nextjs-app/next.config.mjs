@@ -7,10 +7,10 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://laravel-backend-production-ea0e.up.railway.app/api/:path*',
+        destination: 'laravel-backend-production-ea0e.up.railway.app',
       },
     ];
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
