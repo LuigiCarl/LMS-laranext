@@ -182,16 +182,16 @@ export function BorrowReturn() {
           </div>
           <Dialog open={isBorrowDialogOpen} onOpenChange={setIsBorrowDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              {/* <Button>
                 <ArrowRightIcon className="mr-2 h-4 w-4" />
                 New Borrow
-              </Button>
+              </Button> */}
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader>
+              {/* <DialogHeader>
                 <DialogTitle>Issue Book</DialogTitle>
                 <DialogDescription>Select a book and user to create a new borrow record.</DialogDescription>
-              </DialogHeader>
+              </DialogHeader> */}
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="book" className="text-right">

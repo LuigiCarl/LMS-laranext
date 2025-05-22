@@ -1,7 +1,7 @@
-import { LibrarySidebar } from "@/components/library-sidebar"
+import { LibrarySidebar } from "@/components/dashboardui/library-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { LibrarySettings } from "@/components/library-settings"
+import { LibrarySettings } from "@/components/dashboardui/library-settings"
 
 export default function SettingsPage() {
   return (
