@@ -4,5 +4,15 @@ const nextConfig = {
       domains: ['images.unsplash.com', 'imagedelivery.net'], // Allow Unsplash images
     },
   };
+  module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'laravel-backend-production-ea0e.up.railway.app',
+      },
+    ]
+  },
+}
   
   export default nextConfig;
