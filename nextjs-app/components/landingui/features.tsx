@@ -25,31 +25,31 @@ const featureText: FeatureText[] = [
     href: "/",
     description:
       "Game of Thrones is a fantasy drama television series based on George R.R. Martin's book series A Song of Ice and Fire",
-    cta: "Learn More",
+    cta: "See More",
   },
   {
     icon: <Coins className="h-6 w-6" />,
     title: "Atomic Habits",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    cta: "Learn More",
+      "Atomic Habits by James Clear is a bestselling self-help book that focuses on how small, consistent changes can lead to remarkable results over time.",
+    cta: "See More",
   },
   {
     icon: <Coins className="h-6 w-6" />,
     title: "To kill a mockingbird",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    cta: "Learn More",
+      "To Kill a Mockingbird by Harper Lee is a classic novel set in the racially segregated town of Maycomb, Alabama, during the 1930s. ",
+    cta: "See More",
   },
   {
     icon: <Coins className="h-6 w-6" />,
     title: "The alchemist",
     href: "/",
     description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    cta: "Learn More",
+      "The Alchemist by Paulo Coelho is a philosophical novel that tells the story of Santiago, a young Andalusian shepherd who dreams of finding a hidden treasure near the Egyptian pyramids.",
+    cta: "See More",
   },
 ];
 
@@ -65,10 +65,7 @@ const Feature = () => {
           </h3>
           <h4 className="text-2xl font-light opacity-70">
             <Balancer>
-              Book Hub is an all-in-one platform designed for book lovers, students, and lifelong learners.
-               Whether you're looking to discover your next great read, build a personal library, or connect with a community of readers, Book Hub has you covered.
-                With a vast collection of books across all genres, personalized recommendations, user reviews, and seamless borrowing or purchasing options, Book Hub brings the entire reading experience to your fingertips.
-               Organize your shelves, track your reading progress, and dive into discussions—all in one place.
+              Book Hub is a platform or application designed to help users easily discover, read, organize, and share books. 
             </Balancer>
           </h4>
 
