@@ -66,9 +66,9 @@ const Feature = () => {
           <h4 className="text-2xl font-light opacity-70">
             <Balancer>
               Book Hub is an all-in-one platform designed for book lovers, students, and lifelong learners.
-               Whether you're looking to discover your next great read, build a personal library, or connect with a community of readers, Book Hub has you covered.
+               Whether you looking to discover your next great read, build a personal library, or connect with a community of readers, Book Hub has you covered.
                 With a vast collection of books across all genres, personalized recommendations, user reviews, and seamless borrowing or purchasing options, Book Hub brings the entire reading experience to your fingertips.
-               Organize your shelves, track your reading progress, and dive into discussions—all in one place.
+               
             </Balancer>
           </h4>
 
