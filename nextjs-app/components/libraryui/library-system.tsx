@@ -1,7 +1,8 @@
 "use client"
 
 import { AnimatePresence } from "motion/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import apiClient from "@/lib/axios"
 import { BookGrid } from "./book-grid"
 import { BorrowingDrawer } from "./borrowing-drawer"
 import { BookModal } from "./book-modal"
@@ -12,7 +13,7 @@ import { useAuth } from "./auth-context"
 
 export default function LibrarySystem() {
   const { user } = useAuth()
-  const [books, setBooks] = useState<Book[]>(initialBooks)
+  const [books, setBooks] = useState<Book[]>([])
   const [borrowedBooks, setBorrowedBooks] = useState<BorrowedBook[]>([])
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [isBorrowingOpen, setIsBorrowingOpen] = useState(false)
@@ -62,6 +63,25 @@ export default function LibrarySystem() {
     // Return true only if both conditions are met
     return matchesSearch && matchesCategory
   })
+
+  // Fetch books and borrowed books from backend
+  useEffect(() => {
+    apiClient.get<Book[]>("/books")
+      .then(res => {
+        setBooks(Array.isArray(res.data) ? res.data : [])
+      })
+      .catch(() => setBooks([]))
+
+    if (user) {
+      apiClient.get<BorrowedBook[]>(`/users/${user.id}/borrows`)
+        .then(res => {
+          setBorrowedBooks(Array.isArray(res.data) ? res.data : [])
+        })
+        .catch(() => setBorrowedBooks([]))
+    } else {
+      setBorrowedBooks([])
+    }
+  }, [user])
 
   return (
     <div className="h-screen ">

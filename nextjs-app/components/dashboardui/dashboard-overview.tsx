@@ -1,46 +1,13 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { BookIcon, BookOpenIcon, ClockIcon, UsersIcon } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RecentBorrows } from "../recent-borrows"
-
-const statsData = [
-  {
-    title: "Total Books",
-    value: "2,845",
-    description: "Books in collection",
-    icon: BookIcon,
-    trend: "+12 this month",
-    trendUp: true,
-  },
-  {
-    title: "Active Borrows",
-    value: "186",
-    description: "Books currently borrowed",
-    icon: BookOpenIcon,
-    trend: "+8 this week",
-    trendUp: true,
-  },
-  {
-    title: "Overdue Returns",
-    value: "24",
-    description: "Books past due date",
-    icon: ClockIcon,
-    trend: "-3 from last week",
-    trendUp: false,
-  },
-  {
-    title: "Registered Users",
-    value: "1,253",
-    description: "Active library members",
-    icon: UsersIcon,
-    trend: "+15 this month",
-    trendUp: true,
-  },
-]
+import apiClient from "@/lib/axios"
 
 const activityData = [
   { date: "2024-01-01", borrows: 12, returns: 8 },
@@ -71,6 +38,86 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function DashboardOverview() {
+  const [stats, setStats] = useState({
+    totalBooks: 0,
+    activeBorrows: 0,
+    overdueReturns: 0,
+    registeredUsers: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    Promise.all([
+      apiClient.get("/books"),
+      apiClient.get("/borrows"),
+      apiClient.get("/users"),
+    ])
+      .then(([booksRes, borrowsRes, usersRes]) => {
+        const books = Array.isArray(booksRes.data) ? booksRes.data : []
+        const borrows = Array.isArray(borrowsRes.data) ? borrowsRes.data : []
+        // Fix: support both array and { data: array } for users
+        let users: any[] = []
+        if (Array.isArray(usersRes.data)) {
+          users = usersRes.data
+        } else if (usersRes.data && typeof usersRes.data === "object" && Array.isArray(usersRes.data.data)) {
+          users = usersRes.data.data
+        }
+
+        const activeBorrows = borrows.filter((b: any) => b.status === "active").length
+        // Overdue Returns: borrows that were returned late
+        const overdueReturns = borrows.filter((b: any) =>
+          b.status === "returned" &&
+          b.return_date &&
+          b.due_date &&
+          new Date(b.return_date) > new Date(b.due_date)
+        ).length
+
+        setStats({
+          totalBooks: books.length,
+          activeBorrows,
+          overdueReturns,
+          registeredUsers: users.length,
+        })
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const statsData = [
+    {
+      title: "Total Books",
+      value: loading ? "..." : stats.totalBooks.toLocaleString(),
+      description: "Books in collection",
+      icon: BookIcon,
+      trend: "",
+      trendUp: true,
+    },
+    {
+      title: "Active Borrows",
+      value: loading ? "..." : stats.activeBorrows.toLocaleString(),
+      description: "Books currently borrowed",
+      icon: BookOpenIcon,
+      trend: "",
+      trendUp: true,
+    },
+    {
+      title: "Overdue Returns",
+      value: loading ? "..." : stats.overdueReturns.toLocaleString(),
+      description: "Books past due date",
+      icon: ClockIcon,
+      trend: "",
+      trendUp: false,
+    },
+    {
+      title: "Registered Users",
+      value: loading ? "..." : stats.registeredUsers.toLocaleString(),
+      description: "Active library members",
+      icon: UsersIcon,
+      trend: "",
+      trendUp: true,
+    },
+  ]
+
   return (
     <div className="space-y-6 px-4 lg:px-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -78,7 +125,9 @@ export function DashboardOverview() {
           <Card key={index} className="@container/card">
             <CardHeader className="relative">
               <CardDescription>{stat.title}</CardDescription>
-              <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">{stat.value}</CardTitle>
+              <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+                {stat.value}
+              </CardTitle>
               <div className="absolute right-4 top-4">
                 <stat.icon className="h-5 w-5 text-muted-foreground" />
               </div>
@@ -86,7 +135,11 @@ export function DashboardOverview() {
             <CardFooter className="flex-col items-start gap-1 text-sm">
               <div className="line-clamp-1 flex gap-2 font-medium">
                 <span
-                  className={stat.trendUp ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}
+                  className={
+                    stat.trendUp
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-amber-600 dark:text-amber-400"
+                  }
                 >
                   {stat.trend}
                 </span>

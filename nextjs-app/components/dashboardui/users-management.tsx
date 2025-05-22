@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Switch } from "@/components/ui/switch"
 import { User } from "@/types/user"
+import type { Borrow } from "@/types/borrow"
 import apiClient from "@/lib/axios"
 
 export function UsersManagement() {
@@ -68,27 +69,40 @@ export function UsersManagement() {
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [addUserError, setAddUserError] = useState<string | null>(null)
+  const [borrows, setBorrows] = useState<Borrow[]>([])
 
   useEffect(() => {
     setLoading(true)
     setError(null)
-    apiClient.get<User[]>("/users")
-      .then(res => {
+    Promise.all([
+      apiClient.get<User[]>("/users"),
+      apiClient.get<Borrow[]>("/borrows"),
+    ])
+      .then(([usersRes, borrowsRes]) => {
         // Defensive: always set to array
-        if (Array.isArray(res.data)) {
-          setUsers(res.data)
-        } else if (res.data && typeof res.data === "object" && Array.isArray((res.data as any).data)) {
-          setUsers((res.data as any).data)
+        if (Array.isArray(usersRes.data)) {
+          setUsers(usersRes.data)
+        } else if (usersRes.data && typeof usersRes.data === "object" && Array.isArray((usersRes.data as any).data)) {
+          setUsers((usersRes.data as any).data)
         } else {
           setUsers([])
         }
+        setBorrows(Array.isArray(borrowsRes.data) ? borrowsRes.data : [])
       })
       .catch(() => {
-        setUsers([]) // Show empty table if error
-        // Do not set error, so table renders with "No users found"
+        setUsers([])
+        setBorrows([])
       })
       .finally(() => setLoading(false))
   }, [])
+
+  // Compute active borrows for each user
+  const userActiveBorrows: Record<number, number> = {}
+  borrows.forEach(b => {
+    if (b.status === "active") {
+      userActiveBorrows[b.borrower_id] = (userActiveBorrows[b.borrower_id] || 0) + 1
+    }
+  })
 
   // Defensive: always use an array for mapping
   const mappedUsers = Array.isArray(users)
@@ -97,7 +111,7 @@ export function UsersManagement() {
         registeredDate: u.created_at,
         initials: u.name ? u.name.split(" ").map(n => n[0]).join("") : "",
         //avatar: "/placeholder-user.svg",
-        activeBorrows: 1,
+        activeBorrows: userActiveBorrows[u.id] || 0,
         isBlocked: u.status === "blocked",
       }))
     : []
@@ -165,14 +179,14 @@ export function UsersManagement() {
     setEditLoading(true)
     setEditError(null)
     try {
-      // Only send editable fields
+      // Always send status, default to "active" if missing
       const payload = {
         name: currentUser.name,
         email: currentUser.email,
         phone: currentUser.phone,
         address: currentUser.address,
+        status: currentUser.status || "active",
       }
-      // Use the custom hook or apiClient directly
       await apiClient.put(`/users/${currentUser.id}`, payload)
       // Refresh users from backend after update
       setLoading(true)
