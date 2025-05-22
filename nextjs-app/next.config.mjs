@@ -1,18 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      domains: ['images.unsplash.com', 'imagedelivery.net'], // Allow Unsplash images
-    },
-  };
-  module.exports = {
+  images: {
+    domains: ['images.unsplash.com', 'imagedelivery.net'],
+  },
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'laravel-backend-production-ea0e.up.railway.app',
+        destination: 'https://laravel-backend-production-ea0e.up.railway.app/api/:path*',
       },
-    ]
+    ];
   },
-}
-  
-  export default nextConfig;
+};
+
+module.exports = nextConfig;
