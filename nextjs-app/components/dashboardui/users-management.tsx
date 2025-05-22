@@ -40,7 +40,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Switch } from "@/components/ui/switch"
 import { User } from "@/types/user"
 import apiClient from "@/lib/axios"
-import { useAxiosPut } from "@/hooks/useAxiosPut"
 
 export function UsersManagement() {
   const [users, setUsers] = useState<User[]>([])
@@ -56,6 +55,7 @@ export function UsersManagement() {
     email: "",
     phone: "",
     address: "",
+    password: "",
   })
   const [showBlocked, setShowBlocked] = useState(true)
   const [loading, setLoading] = useState(true)
@@ -67,6 +67,7 @@ export function UsersManagement() {
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [addUserError, setAddUserError] = useState<string | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -95,8 +96,8 @@ export function UsersManagement() {
         ...u,
         registeredDate: u.created_at,
         initials: u.name ? u.name.split(" ").map(n => n[0]).join("") : "",
-        avatar: "/placeholder-user.jpg",
-        activeBorrows: 0,
+        //avatar: "/placeholder-user.svg",
+        activeBorrows: 1,
         isBlocked: u.status === "blocked",
       }))
     : []
@@ -109,29 +110,53 @@ export function UsersManagement() {
         (user.phone ?? "").includes(searchQuery)),
   )
 
-  const handleAddUser = () => {
-    const now = new Date().toISOString();
-    const userToAdd: User = {
-      id: users.length + 1,
-      name: newUser.name,
-      email: newUser.email,
-      phone: newUser.phone,
-      address: newUser.address,
-      role: "user",
-      status: "active",
-      email_verified_at: null,
-      created_at: now,
-      updated_at: now,
+  const handleAddUser = async () => {
+    setAddUserError(null)
+    try {
+      // POST to backend endpoint /users
+      await apiClient.post("/users", {
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        address: newUser.address,
+        password: newUser.password,
+        role: "user",
+        status: "active",
+      })
+      // Refresh users from backend after add
+      setLoading(true)
+      apiClient.get<User[]>("/users")
+        .then(res => {
+          if (Array.isArray(res.data)) {
+            setUsers(res.data)
+          } else if (res.data && typeof res.data === "object" && Array.isArray((res.data as any).data)) {
+            setUsers((res.data as any).data)
+          } else {
+            setUsers([])
+          }
+        })
+        .catch(() => {
+          setUsers([])
+        })
+        .finally(() => setLoading(false))
+      setNewUser({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        password: "",
+      })
+      setIsAddUserOpen(false)
+    } catch (err: any) {
+      // Show backend validation error for password
+      if (err?.response?.data?.errors?.password?.length) {
+        setAddUserError(err.response.data.errors.password.join(" "))
+      } else if (err?.message) {
+        setAddUserError(err.message)
+      } else {
+        setAddUserError("Failed to add user")
+      }
     }
-
-    setUsers([...users, userToAdd])
-    setNewUser({
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-    })
-    setIsAddUserOpen(false)
   }
 
   // Edit User (PUT to backend)
@@ -326,6 +351,21 @@ export function UsersManagement() {
                     className="col-span-3"
                   />
                 </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="password" className="text-right">
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                {addUserError && (
+                  <div className="col-span-4 text-red-600">{addUserError}</div>
+                )}
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddUserOpen(false)}>
@@ -358,7 +398,7 @@ export function UsersManagement() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                        {/* <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} /> */}
                         <AvatarFallback>{user.initials}</AvatarFallback>
                       </Avatar>
                       <span className="font-medium">{user.name}</span>
@@ -472,7 +512,7 @@ export function UsersManagement() {
             <div className="py-4">
               <div className="flex flex-col items-center gap-4 mb-6">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
+                  {/* <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} /> */}
                   <AvatarFallback className="text-xl">{currentUser.initials}</AvatarFallback>
                 </Avatar>
                 <div className="text-center">
@@ -612,7 +652,7 @@ export function UsersManagement() {
               <p className="mb-2">You are about to delete:</p>
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
+                  {/* <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} /> */}
                   <AvatarFallback>{currentUser.initials}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -659,7 +699,7 @@ export function UsersManagement() {
             <div className="py-4">
               <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
+                  {/* <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} /> */}
                   <AvatarFallback>{currentUser.initials}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -710,7 +750,7 @@ export function UsersManagement() {
             <div className="py-4">
               <div className="flex items-center gap-2 mb-4">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
+                  {/* <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} /> */}
                   <AvatarFallback>{currentUser.initials}</AvatarFallback>
                 </Avatar>
                 <div>

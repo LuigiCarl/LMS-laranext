@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LibrarySearch } from "./library-search"
+import { LibrarySearch } from "../library-search"
 
 export function LibrarySidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
