@@ -42,10 +42,10 @@ export function CTA() {
   return (
     <Section className="border-t my-12 mx-12 pt-12">
       <Container className="flex flex-col items-center gap-6 text-center">
-        <h2 className="!my-0">Subscribe</h2>
+        <h3 className="!my-0">BSIT 2-4</h3>
         <p className="text-lg opacity-70 md:text-2xl">
           <Balancer>
-            BSIT 2-4
+            
           </Balancer>
         </p>
         <Form {...form}>

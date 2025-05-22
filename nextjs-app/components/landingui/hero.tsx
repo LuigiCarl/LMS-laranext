@@ -31,7 +31,6 @@ const Hero = () => {
         </h1>
         <h3 className="text-muted-foreground">
           <Balancer>
-            Everyone
           </Balancer>
         </h3>
         <div className="not-prose mt-6 flex gap-2 md:mt-12">
