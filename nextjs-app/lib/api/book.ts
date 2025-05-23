@@ -1,5 +1,5 @@
 import apiClient from "../axios"
-import { Book } from "@/types/book" // if you have type definitions
+import { Book } from "@/types/book" // if you have type definitions.
 
 export const getBooks = () => apiClient.get<Book[]>("/books")
 export const getBook = (id: number) => apiClient.get<Book>(`/books/${id}`)
