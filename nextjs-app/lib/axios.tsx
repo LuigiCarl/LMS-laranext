@@ -2,7 +2,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://laravel-backend-4.onrender.com",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
