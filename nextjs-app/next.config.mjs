@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://laravel-backend-4.onrender.com',
+        destination: 'https://laravel-backend-4.onrender.com/:path*',
       },
     ];
   },
