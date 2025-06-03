@@ -2,7 +2,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://ourbackend.infinityfreeapp.com/api",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://laravel-backend-production-f934.up.railway.app/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",

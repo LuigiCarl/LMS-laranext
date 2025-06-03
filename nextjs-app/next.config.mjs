@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://ourbackend.infinityfreeapp.com/api/:path*',
+        destination: 'https://laravel-backend-production-f934.up.railway.app/api/:path*',
       },
     ];
   },
