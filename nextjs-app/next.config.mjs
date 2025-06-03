@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://ourbackend.infinityfreeapp.com/api/:path*',
+        destination: 'https://ourbackend.infinityfreeapp.com/api/:path*',
       },
     ];
   },

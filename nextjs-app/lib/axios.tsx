@@ -2,7 +2,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://ourbackend.infinityfreeapp.com/api",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "https://ourbackend.infinityfreeapp.com/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
