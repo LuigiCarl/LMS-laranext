@@ -7,7 +7,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://laravel-backend-4.onrender.com/api/:path*',
+        destination: 'http://ourbackend.infinityfreeapp.com/api/:path*',
       },
     ];
   },
